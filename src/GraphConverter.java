@@ -32,6 +32,7 @@ public class GraphConverter {
 	public int n;
 	public int[][] adj;
 	public int[][] rev;
+	public int[] vertexID;
 	
 	int[] readEdges() throws IOException {
 		InputStream in = new FileInputStream(file);
@@ -59,6 +60,7 @@ public class GraphConverter {
 		int[] sorted = es.clone();
 		Utils.radixSort(sorted);
 		sorted = Utils.unique(sorted);
+		vertexID = sorted.clone();
 		n = sorted.length;
 		int maxID = 0;
 		for (int e : es) if (maxID < e) maxID = e;
@@ -155,6 +157,9 @@ public class GraphConverter {
 		int[] sorted = Utils.indexSort(deg);
 		int[] ids = new int[n];
 		for (int i = 0; i < n; i++) ids[sorted[i]] = i;
+		int[] vid = new int[n];
+		for (int i = 0; i < n; i++) vid[i] = vertexID[sorted[i]];
+		vertexID = vid;
 		int[][] tmp = new int[n][];
 		for (int i = 0; i < n; i++) {
 			tmp[ids[i]] = new int[adj[i].length];
@@ -168,7 +173,7 @@ public class GraphConverter {
 		createAdj(readEdges());
 		sorting();
 		if (component) {
-			component();
+			throw null;
 		}
 		if (sorting) degSort();
 	}

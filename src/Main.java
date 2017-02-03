@@ -23,14 +23,22 @@ public class Main {
 	@Option(abbr = 'o')
 	public static boolean outputLP = false;
 	
+	@Option(abbr = 'p', usage = "Print the minimum vertex cover. The size of VC is in the first line. Each of the following lines contains the vertex ID.")
+	public static boolean printVC = false;
+	
 	@Option(abbr = 'd')
 	public static int debug = 0;
 	
-	int[][] read(String file) {
+	int[] vertexID;
+	int[][] adj;
+	
+	void read(String file) {
 		if (file.endsWith(".dat")) {
 			GraphIO io = new GraphIO();
 			io.read(new File(file));
-			return io.adj;
+			adj = io.adj;
+			vertexID = new int[adj.length];
+			for (int i = 0; i < adj.length; i++) vertexID[i] = i;
 		} else {
 			GraphConverter conv = new GraphConverter();
 			conv.file = file;
@@ -51,13 +59,14 @@ public class Main {
 					throw new RuntimeException(ex);
 				}
 			}
-			return conv.adj;
+			adj = conv.adj;
+			vertexID = conv.vertexID;
 		}
 	}
 	
 	void run(String file) {
 		System.err.println("reading the input graph...");
-		int[][] adj = read(file);
+		read(file);
 		if (debug > 0) Stat.setShutdownHook();
 		int m = 0;
 		for (int i = 0; i < adj.length; i++) m += adj[i].length;
@@ -76,8 +85,8 @@ public class Main {
 			vc.solve();
 			end = System.currentTimeMillis();
 		}
-		System.out.printf("opt = %d, time = %.3f%n", vc.opt, 1e-3 * (end - start));
-		adj = read(file);
+		System.err.printf("opt = %d, time = %.3f%n", vc.opt, 1e-3 * (end - start));
+		read(file);
 		int sum = 0;
 		for (int i = 0; i < adj.length; i++) {
 			sum += vc.y[i];
@@ -86,7 +95,13 @@ public class Main {
 		}
 		Debug.check(sum == vc.opt);
 		if (debug > 0) {
-			System.out.printf("%d\t%d\t%d\t%.3f\t%d%n", adj.length, m, vc.opt, 1e-3 * (end - start), VCSolver.nBranchings);
+			System.err.printf("%d\t%d\t%d\t%.3f\t%d%n", adj.length, m, vc.opt, 1e-3 * (end - start), VCSolver.nBranchings);
+		}
+		if (printVC) {
+			System.out.println(sum);
+			for (int i = 0; i < adj.length; i++) if (vc.y[i] > 0) {
+				System.out.println(vertexID[i]);
+			}
 		}
 	}
 	
