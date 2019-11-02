@@ -440,7 +440,7 @@ public class VCSolver {
 						que[qt++] = n + out[v];
 					}
 				}
-				ok = false;
+				//ok = false;
 				if (ok) {
 					for (int j = 0; j < qt; j++) {
 						v = que[j];
@@ -923,7 +923,7 @@ public class VCSolver {
 					boolean ok = true;
 					for (int u2 : adj[v]) if (x[u2] < 0 && ps[u2] != w) {
 						int c2 = 0;
-						for (int w2 : adj[u2]) if (x[w2] < 0 && ps[w2] == w) c2++;
+						for (int w2 : adj[u2]) if (x[w2] < 0 && ps[w2] != w && ps[w2] != -2) c2++;
 						if (c2 != c1 - 1) {
 							ok = false;
 							break;
